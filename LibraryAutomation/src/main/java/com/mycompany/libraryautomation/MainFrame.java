@@ -1,0 +1,189 @@
+
+package com.mycompany.libraryautomation;
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.*;
+
+public class MainFrame extends JFrame {
+
+   private JTextField usernameField;
+    private JPasswordField passwordField;
+    private JButton loginButton;
+    private JButton registerButton;
+
+    public MainFrame() {
+        // Frame settings
+        setTitle("Library Management System");
+        setSize(400, 300);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+
+        // Panel for login form
+        JPanel panel = new JPanel();
+        panel.setLayout(null);
+
+        // Username label and text field
+        JLabel usernameLabel = new JLabel("Username:");
+        usernameLabel.setBounds(50, 50, 100, 25);
+        panel.add(usernameLabel);
+
+        usernameField = new JTextField(20);
+        usernameField.setBounds(150, 50, 150, 25);
+        panel.add(usernameField);
+
+        // Password label and field
+        JLabel passwordLabel = new JLabel("Password:");
+        passwordLabel.setBounds(50, 100, 100, 25);
+        panel.add(passwordLabel);
+
+        passwordField = new JPasswordField(20);
+        passwordField.setBounds(150, 100, 150, 25);
+        panel.add(passwordField);
+
+        // Login button
+        loginButton = new JButton("Login");
+        loginButton.setBounds(50, 150, 100, 25);
+        panel.add(loginButton);
+
+        // Register button
+        registerButton = new JButton("Register");
+        registerButton.setBounds(200, 150, 100, 25);
+        panel.add(registerButton);
+
+        // Add action listener for the buttons
+        loginButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+
+                // Handle login action
+                String username = usernameField.getText();
+                char[] password = passwordField.getPassword();
+                User user = new User(username, new String(password));
+
+                if (username.equals("admin") && new String(password).equals("password")) {
+                    // Open the dashboard or next frame
+                    JOptionPane.showMessageDialog(null, "Login Successful");
+                    // Next frame code here
+                } else {
+
+                    try {
+                        // Veritabanı bağlantısını al
+                        Connection connection = DataBaseHelper.getConnection();
+
+                        // SQL sorgusu
+                        String sql = "SELECT * FROM Users WHERE username = ? AND password = ?";
+
+                        // PreparedStatement oluştur
+                        PreparedStatement statement = connection.prepareStatement(sql);
+
+                        // Parametreleri ayarla
+                        statement.setString(1, username);
+                        statement.setString(2, user.getPassword());
+
+                        // Sorguyu çalıştır ve sonucu al
+                        ResultSet resultSet = statement.executeQuery();
+
+                        // Kullanıcı varsa giriş başarılı mesajını göster
+                        if (resultSet.next()) {
+                            JOptionPane.showMessageDialog(null, "Login Successful");
+                            // Dashboard veya bir sonraki frame'i açabilirsiniz
+                            dispose();
+                            UserFrame userFrame = new UserFrame(username);
+                            userFrame.setVisible(true);
+                            
+                        } else {
+                            // Kullanıcı yoksa geçersiz kullanıcı adı veya parola mesajını göster
+                            JOptionPane.showMessageDialog(null, "Invalid Username or Password");
+                        }
+
+                        // Kaynakları serbest bırak
+                        resultSet.close();
+                        statement.close();
+                        connection.close();
+                    } catch (SQLException ex) {
+                        ex.printStackTrace();
+                        JOptionPane.showMessageDialog(null, "Error: Unable to login");
+                    }
+                }
+            }
+        });
+
+        registerButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                // Open registration frame
+                JOptionPane.showMessageDialog(null, "Open Registration Form");
+                dispose();
+                // Registration frame code here
+                RegisterFrame registerFrame = new RegisterFrame();
+                registerFrame.setVisible(true);
+
+            }
+        });
+
+        // Add panel to frame
+        add(panel);
+    }
+
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 400, Short.MAX_VALUE)
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 300, Short.MAX_VALUE)
+        );
+
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new MainFrame().setVisible(true);
+            }
+        });
+    }
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    // End of variables declaration//GEN-END:variables
+}
